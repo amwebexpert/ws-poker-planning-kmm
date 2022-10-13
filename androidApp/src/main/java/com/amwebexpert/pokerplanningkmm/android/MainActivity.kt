@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amwebexpert.pokerplanningkmm.Greeting
 
+import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
+
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -66,7 +69,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting(Greeting().greeting())
+                    val scope = rememberCoroutineScope()
+                    var text by remember { mutableStateOf("Loading") }
+                    LaunchedEffect(true) {
+                        scope.launch {
+                            text = try {
+                                Greeting().greetingRemote()
+                            } catch (e: Exception) {
+                                e.localizedMessage ?: "error"
+                            }
+                        }
+                    }
+                    Greeting("Normal sync call result: '${Greeting().greeting()}'.\n\n Async result:result:\n $text")
                 }
             }
         }

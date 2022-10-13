@@ -2,6 +2,7 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
+    @ObservedObject private(set) var viewModel: ViewModel
 	let greet = Greeting().greeting()
     @State private var username: String = ""
 
@@ -13,12 +14,26 @@ struct ContentView: View {
             } else {
                 Text(greet)
             }
+
+            // async UI element(s)
+            Text(viewModel.text)
         }).padding(16)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+extension ContentView {
+    class ViewModel: ObservableObject {
+        @Published var text = "Loading..."
+        init() {
+            Greeting().greetingRemote { greeting, error in
+                DispatchQueue.main.async {
+                    if let greeting = greeting {
+                        self.text = greeting
+                    } else {
+                        self.text = error?.localizedDescription ?? "error"
+                    }
+                }
+            }
+        }
+    }
 }
