@@ -34,6 +34,15 @@ class MainViewModel: ViewModel() {
         emit(currentValue)
     }
 
+    fun vote(username: String, value: String) {
+        val jsonMessage = pokerPlanningService.buildEstimateMessageAsJson(username= username, estimate = value)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                webSocketService.sendMessage(text = jsonMessage)
+            }
+        }
+    }
+
     fun handleWebSocketsCommunications() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

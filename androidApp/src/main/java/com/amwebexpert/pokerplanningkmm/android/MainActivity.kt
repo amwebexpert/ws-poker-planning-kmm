@@ -3,6 +3,7 @@ package com.amwebexpert.pokerplanningkmm.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.amwebexpert.pokerplanningkmm.ExampleService
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.plcoding.kotlinflows.ui.theme.MyApplicationTheme
 
@@ -33,15 +35,18 @@ class MainActivity : ComponentActivity() {
                     val httpGetResponse = viewModel.httpGetResponse.collectAsState(initial = "Loading...")
                     val incomingMessage = viewModel.incomingWebSocketMessage.collectAsState(initial = "N/A")
 
-                    Column() {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Box() {
-                            Text("Normal sync call result: '${ExampleService.instance.getPlatformAndDate()}'.")
+                            Text("** Normal sync call result:result\n ${ExampleService.instance.getPlatformAndDate()}")
                         }
                         Box() {
-                            Text("Async result:result:\n ${httpGetResponse.value}")
+                            Text("** Poker state:\n ${incomingMessage.value}")
+                        }
+                        Button(onClick = { viewModel.vote("KMM", "8") }) {
+                            Text("VOTE")
                         }
                         Box() {
-                            Text("Poker state:\n ${incomingMessage.value}")
+                            Text("** Async result:result:\n ${httpGetResponse.value}")
                         }
                     }
                 }

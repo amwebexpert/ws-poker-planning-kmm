@@ -19,7 +19,7 @@ class ExampleService private constructor () {
     }
 
     suspend fun apiCallTextResult(): String {
-        delay(2000)
+        delay(1000)
         val response = client.get("https://ktor.io/docs/")
         return response.bodyAsText()
     }

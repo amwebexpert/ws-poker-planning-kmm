@@ -4,6 +4,8 @@ import com.amwebexpert.pokerplanningkmm.service.model.UserEstimate
 import com.amwebexpert.pokerplanningkmm.service.model.UserEstimateMessage
 import com.amwebexpert.pokerplanningkmm.service.model.UserMessageType
 import kotlinx.datetime.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class PokerPlanningService private constructor () {
     companion object {
@@ -21,5 +23,10 @@ class PokerPlanningService private constructor () {
         val estimatedAtISO8601 = Clock.System.now().toString()
         val userEstimate = UserEstimate(username = username, estimate = estimate, estimatedAtISO8601 = estimatedAtISO8601)
         return UserEstimateMessage(type = UserMessageType.VOTE, payload = userEstimate)
+    }
+
+    fun buildEstimateMessageAsJson(username: String, estimate: String): String {
+        val message = buildEstimateMessage(username, estimate)
+        return Json.encodeToString(message)
     }
 }
