@@ -3,6 +3,7 @@ package com.amwebexpert.pokerplanningkmm
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 
 class Greeting {
@@ -14,6 +15,7 @@ class Greeting {
     }
 
     suspend fun greetingRemote(): String {
+        delay(2000)
         val response = client.get("https://ktor.io/docs/")
         return response.bodyAsText()
     }
