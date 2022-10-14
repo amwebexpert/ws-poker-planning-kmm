@@ -22,6 +22,7 @@ import com.amwebexpert.pokerplanningkmm.Greeting
 import androidx.compose.runtime.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import com.amwebexpert.pokerplanningkmm.service.PokerPlanningService
 import com.amwebexpert.pokerplanningkmm.service.model.PokerPlanningSession
 import com.amwebexpert.pokerplanningkmm.ws.WebSocketService
 import com.amwebexpert.pokerplanningkmm.ws.WsTextMessageListener
@@ -74,6 +75,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun isActivityInForeground() = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+    private val webSocketService get() = WebSocketService.instance
+    private val pokerPlanningService get() = PokerPlanningService.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,23 +104,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        lifecycleScope.launch { // or GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                val service = WebSocketService.instance
-                service.disconnect()
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         handleWebSocketsCommunications()
     }
-
-
 
     private fun handleWebSocketsCommunications() {
         lifecycleScope.launch { // or GlobalScope.launch {
@@ -127,9 +117,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        handleWebSocketsDisconnection()
+    }
+
+    private fun handleWebSocketsDisconnection() {
+        lifecycleScope.launch { // or GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                webSocketService.disconnect()
+            }
+        }
+    }
+
     private suspend fun connectToWebSocket() {
-        val service = WebSocketService.instance
-        service.connect(
+        webSocketService.connect(
             hostname = "ws-poker-planning.herokuapp.com",
             roomUUID = "e78caaee-a1a2-4298-860d-81d7752226ae",
             listener = object : WsTextMessageListener {
