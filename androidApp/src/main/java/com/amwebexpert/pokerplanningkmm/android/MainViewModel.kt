@@ -23,6 +23,7 @@ class MainViewModel: ViewModel() {
     private val pokerPlanningService get() = PokerPlanningService.instance
 
     val incomingWebSocketMessage = MutableSharedFlow<String>()
+    var isReadyToCommunicate = false
 
     val httpGetResponse = flow<String> {
         val currentValue = try {
@@ -43,19 +44,17 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun handleWebSocketsCommunications() {
+    fun startCommunication() {
+        isReadyToCommunicate = true
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                connectToWebSocket()
-            }
+            withContext(Dispatchers.IO) { connectToWebSocket() }
         }
     }
 
-    fun handleWebSocketsDisconnection() {
+    fun stopCommunication() {
+        isReadyToCommunicate = false
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                webSocketService.disconnect()
-            }
+            withContext(Dispatchers.IO) { webSocketService.disconnect() }
         }
     }
 
@@ -75,17 +74,20 @@ class MainViewModel: ViewModel() {
                 override fun onClose() {
                     Log.w(TAG, "onClose")
 
-                    // TODO callback?
-//                    if (isActivityInForeground()) {
-//                        handleWebSocketsCommunications()
-//                    }
+                    if (!isReadyToCommunicate) {
+                        return
+                    }
+
+                    viewModelScope.launch {
+                        withContext(Dispatchers.IO) { connectToWebSocket() }
+                    }
                 }
 
                 override fun onMessage(text: String) {
                     Log.i(TAG, "onMessage:\n\t $text")
 
                     viewModelScope.launch {
-                        incomingWebSocketMessage.emit(text)
+                        withContext(Dispatchers.IO) { incomingWebSocketMessage.emit(text) }
                     }
                 }
             })

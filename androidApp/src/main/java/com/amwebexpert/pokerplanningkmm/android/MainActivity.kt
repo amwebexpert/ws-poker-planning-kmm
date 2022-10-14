@@ -56,12 +56,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.handleWebSocketsCommunications()
+        viewModel.startCommunication()
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.handleWebSocketsDisconnection()
+        viewModel.stopCommunication()
     }
 }
 
