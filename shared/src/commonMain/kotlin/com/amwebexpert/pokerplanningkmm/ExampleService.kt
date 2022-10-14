@@ -6,7 +6,7 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 
-class ExampleService private constructor () {
+class ExampleService {
     companion object {
         val instance = ExampleService()
     }

@@ -3,7 +3,7 @@ import shared
 
 struct ContentView: View {
     @ObservedObject private(set) var viewModel: ViewModel
-	let greet = Greeting().greeting()
+	let platformAndDate = ExampleService().getPlatformAndDate()
     @State private var username: String = ""
 
 	var body: some View {
@@ -11,28 +11,28 @@ struct ContentView: View {
             TextField("Username", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
 
             if username.isEmpty {
-                Text(greet)
+                Text(platformAndDate)
             } else {
-                Text("\(greet). Welcome \(username)!")
+                Text("\(platformAndDate). Welcome \(username)!")
             }
 
             // async UI element(s)
-            Text(viewModel.text)
+            Text(viewModel.apiTextResponse)
         }).padding(16)
     }
 }
 
 extension ContentView {
     class ViewModel: ObservableObject {
-        @Published var text = "Loading..."
+        @Published var apiTextResponse = "Loading..."
 
         init() {
-            Greeting().greetingRemote { greeting, error in
+            ExampleService().apiCallTextResult { apiTextResponse, error in
                 DispatchQueue.main.async {
-                    if let greeting = greeting {
-                        self.text = greeting
+                    if let apiTextResponse = apiTextResponse {
+                        self.apiTextResponse = apiTextResponse
                     } else {
-                        self.text = error?.localizedDescription ?? "error"
+                        self.apiTextResponse = error?.localizedDescription ?? "error"
                     }
                 }
             }
