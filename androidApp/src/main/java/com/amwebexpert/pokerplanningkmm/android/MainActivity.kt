@@ -10,7 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.amwebexpert.pokerplanningkmm.Greeting
+import com.amwebexpert.pokerplanningkmm.ExampleService
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModelProvider
@@ -30,18 +30,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    val greetingsState = viewModel.greetingsFlow.collectAsState(initial = "Loading...")
-                    val incomingMessages = viewModel.incomingWebSocketMessages.collectAsState(initial = "N/A")
+                    val httpGetResponse = viewModel.httpGetResponse.collectAsState(initial = "Loading...")
+                    val incomingMessage = viewModel.incomingWebSocketMessage.collectAsState(initial = "N/A")
 
                     Column() {
                         Box() {
-                            Text("Normal sync call result: '${Greeting().greeting()}'.")
+                            Text("Normal sync call result: '${ExampleService.instance.getPlatformAndDate()}'.")
                         }
                         Box() {
-                            Text("Async result:result:\n ${greetingsState.value}")
+                            Text("Async result:result:\n ${httpGetResponse.value}")
                         }
                         Box() {
-                            Text("Async poker state:\n ${incomingMessages.value}")
+                            Text("Poker state:\n ${incomingMessage.value}")
                         }
                     }
                 }

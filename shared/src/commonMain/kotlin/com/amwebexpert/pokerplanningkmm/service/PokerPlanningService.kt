@@ -5,7 +5,7 @@ import com.amwebexpert.pokerplanningkmm.service.model.UserEstimateMessage
 import com.amwebexpert.pokerplanningkmm.service.model.UserMessageType
 import kotlinx.datetime.*
 
-class PokerPlanningService {
+class PokerPlanningService private constructor () {
     companion object {
         val instance = PokerPlanningService()
     }

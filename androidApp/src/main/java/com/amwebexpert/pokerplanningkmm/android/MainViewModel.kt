@@ -1,7 +1,7 @@
 package com.amwebexpert.pokerplanningkmm.android
 
 import android.util.Log
-import com.amwebexpert.pokerplanningkmm.Greeting
+import com.amwebexpert.pokerplanningkmm.ExampleService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amwebexpert.pokerplanningkmm.service.PokerPlanningService
@@ -18,13 +18,15 @@ class MainViewModel: ViewModel() {
         private val TAG = MainViewModel::class.java.simpleName
     }
 
+    private val exampleService get() = ExampleService.instance
     private val webSocketService get() = WebSocketService.instance
     private val pokerPlanningService get() = PokerPlanningService.instance
 
-    val incomingWebSocketMessages = MutableSharedFlow<String>()
-    val greetingsFlow = flow<String> {
+    val incomingWebSocketMessage = MutableSharedFlow<String>()
+
+    val httpGetResponse = flow<String> {
         val currentValue = try {
-            Greeting().greetingRemote()
+            exampleService.apiCallTextResult()
         } catch (e: Exception) {
             e.localizedMessage ?: "error"
         }
@@ -74,7 +76,7 @@ class MainViewModel: ViewModel() {
                     Log.i(TAG, "onMessage:\n\t $text")
 
                     viewModelScope.launch {
-                        incomingWebSocketMessages.emit(text)
+                        incomingWebSocketMessage.emit(text)
                     }
                 }
             })

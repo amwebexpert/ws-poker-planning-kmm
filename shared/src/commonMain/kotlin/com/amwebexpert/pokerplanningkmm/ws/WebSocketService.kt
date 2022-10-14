@@ -6,7 +6,7 @@ import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.cancel
 
-class WebSocketService {
+class WebSocketService private constructor () {
     companion object {
         val instance = WebSocketService()
 
