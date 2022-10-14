@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.sp
 import com.amwebexpert.pokerplanningkmm.Greeting
 
 import androidx.compose.runtime.*
+import com.amwebexpert.pokerplanningkmm.service.model.PokerPlanningSession
+import com.amwebexpert.pokerplanningkmm.ws.WebSocketService
+import com.amwebexpert.pokerplanningkmm.ws.WsTextMessageListener
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,6 +66,7 @@ fun MyApplicationTheme(
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -84,6 +88,44 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // connectToWebSocket()
+    }
+
+    private fun connectToWebSocket() {
+        val service = WebSocketService.instance
+        service.connect(
+            hostname = "ws-poker-planning.herokuapp.com",
+            roomUUID = "e78caaee-a1a2-4298-860d-81d7752226ae",
+            listener = object : WsTextMessageListener {
+
+                override fun onConnectSuccess() {
+                    runOnUiThread {
+                        //_binding?.btnJoinRoom?.isEnabled = true
+                    }
+                }
+
+                override fun onConnectFailed() {
+                    runOnUiThread {
+                        // _binding?.btnJoinRoom?.isEnabled = false
+                    }
+                    connectToWebSocket()
+                }
+
+                override fun onClose() {
+                    runOnUiThread {
+                        // _binding?.btnJoinRoom?.isEnabled = false
+                    }
+                    connectToWebSocket()
+                }
+
+                override fun onMessage(text: String) {
+                    runOnUiThread {
+                        // val session = Json.decodeFromString<PokerPlanningSession>(text)//_binding?.textSocketResponse?.setText(session.toString())
+                        print(text)
+                    }
+                }
+            })
     }
 }
 

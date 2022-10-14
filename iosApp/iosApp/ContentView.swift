@@ -9,10 +9,11 @@ struct ContentView: View {
 	var body: some View {
         VStack  (alignment: .center, spacing: 16, content: {
             TextField("Username", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
-            if !username.isEmpty { // <1>
-                Text("\(greet). Welcome \(username)!")
-            } else {
+
+            if username.isEmpty {
                 Text(greet)
+            } else {
+                Text("\(greet). Welcome \(username)!")
             }
 
             // async UI element(s)
@@ -24,6 +25,7 @@ struct ContentView: View {
 extension ContentView {
     class ViewModel: ObservableObject {
         @Published var text = "Loading..."
+
         init() {
             Greeting().greetingRemote { greeting, error in
                 DispatchQueue.main.async {
