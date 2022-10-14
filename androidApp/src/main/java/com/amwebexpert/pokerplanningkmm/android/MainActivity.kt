@@ -1,6 +1,7 @@
 package com.amwebexpert.pokerplanningkmm.android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,10 +20,14 @@ import androidx.compose.ui.unit.sp
 import com.amwebexpert.pokerplanningkmm.Greeting
 
 import androidx.compose.runtime.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import com.amwebexpert.pokerplanningkmm.service.model.PokerPlanningSession
 import com.amwebexpert.pokerplanningkmm.ws.WebSocketService
 import com.amwebexpert.pokerplanningkmm.ws.WsTextMessageListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun MyApplicationTheme(
@@ -64,6 +69,12 @@ fun MyApplicationTheme(
 }
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
+    }
+
+    private fun isActivityInForeground() = lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -88,11 +99,35 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        // connectToWebSocket()
     }
 
-    private fun connectToWebSocket() {
+    override fun onPause() {
+        super.onPause()
+
+        lifecycleScope.launch { // or GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                val service = WebSocketService.instance
+                service.disconnect()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleWebSocketsCommunications()
+    }
+
+
+
+    private fun handleWebSocketsCommunications() {
+        lifecycleScope.launch { // or GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                connectToWebSocket()
+            }
+        }
+    }
+
+    private suspend fun connectToWebSocket() {
         val service = WebSocketService.instance
         service.connect(
             hostname = "ws-poker-planning.herokuapp.com",
@@ -100,29 +135,31 @@ class MainActivity : ComponentActivity() {
             listener = object : WsTextMessageListener {
 
                 override fun onConnectSuccess() {
+                    Log.i(TAG, "onConnectSuccess")
                     runOnUiThread {
                         //_binding?.btnJoinRoom?.isEnabled = true
                     }
                 }
 
                 override fun onConnectFailed() {
-                    runOnUiThread {
-                        // _binding?.btnJoinRoom?.isEnabled = false
-                    }
-                    connectToWebSocket()
+                    Log.w(TAG, "onConnectFailed, nothing to do because the onClose already handle reconnections")
                 }
 
                 override fun onClose() {
+                    Log.w(TAG, "onClose")
                     runOnUiThread {
                         // _binding?.btnJoinRoom?.isEnabled = false
                     }
-                    connectToWebSocket()
+
+                    if (isActivityInForeground()) {
+                        handleWebSocketsCommunications()
+                    }
                 }
 
                 override fun onMessage(text: String) {
+                    Log.i(TAG, "onMessage:\n\t $text")
                     runOnUiThread {
                         // val session = Json.decodeFromString<PokerPlanningSession>(text)//_binding?.textSocketResponse?.setText(session.toString())
-                        print(text)
                     }
                 }
             })
