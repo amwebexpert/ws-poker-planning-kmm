@@ -46,8 +46,11 @@ extension ContentView {
                     }
                 }
             }
-            
 
+            connectToWebSocket()
+        }
+        
+        func connectToWebSocket() {
             wsService.connect(
                 hostname: "ws-poker-planning.herokuapp.com",
                 roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
@@ -59,6 +62,7 @@ extension ContentView {
             }
         }
 
+        // WsTextMessageListener impl methods
         func onConnectSuccess() {}
         func onClose() {}
         func onConnectFailed() {}
