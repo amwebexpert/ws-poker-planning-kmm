@@ -64,10 +64,11 @@ extension ContentView {
                 hostname: "ws-poker-planning.herokuapp.com",
                 roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
                 listener: WsTextMessageListenerImpl(viewModel: self)
-            ) {error in DispatchQueue.main.async {
-                print(error?.localizedDescription ?? "error while connecting")
+            ) {error in
+                DispatchQueue.main.async {
+                    print(error?.localizedDescription ?? "error while connecting")
+                }
             }
-}
         }
     }
 }
