@@ -50,22 +50,34 @@ extension ContentView {
             connectToWebSocket()
         }
         
+        // TODO: implements startCommunication/stopCommunication like in MainViewModel.kt
+        // and bind these methods the the iOS view lifecycle onPause/onResume equivalents
+        
         func connectToWebSocket() {
-            wsService.connect(
-                hostname: "ws-poker-planning.herokuapp.com",
-                roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
-                listener: self
-            ) {error in
-                DispatchQueue.main.async {
-                    print(error?.localizedDescription ?? "error while connecting")
+            DispatchQueue.main.async {
+                self.wsService.connect(
+                    hostname: "ws-poker-planning.herokuapp.com",
+                    roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
+                    listener: self
+                ) {error in
+                    DispatchQueue.main.async {
+                        print(error?.localizedDescription ?? "error while connecting")
+                    }
                 }
             }
         }
 
         // WsTextMessageListener impl methods
-        func onConnectSuccess() {}
-        func onClose() {}
-        func onConnectFailed() {}
+        func onConnectSuccess() {
+            print("iOS: onConnectSuccess.")
+        }
+        func onConnectFailed() {
+            print("iOS: onConnectFailed.")
+        }
+        func onClose() {
+            print("iOS: onClose. Reconnecting...")
+            connectToWebSocket()
+        }
         func onMessage(text: String) {
             self.incomingMessage = text
             self.objectWillChange.send() //https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
