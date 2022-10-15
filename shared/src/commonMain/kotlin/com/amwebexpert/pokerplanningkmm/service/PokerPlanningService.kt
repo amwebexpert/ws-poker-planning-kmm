@@ -7,7 +7,7 @@ import kotlinx.datetime.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class PokerPlanningService private constructor () {
+class PokerPlanningService () {
     companion object {
         val instance = PokerPlanningService()
     }

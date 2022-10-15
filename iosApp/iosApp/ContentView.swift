@@ -20,6 +20,7 @@ struct ContentView: View {
             // async UI element(s)
             Text("Async Poker planning message:")
             Text(viewModel.incomingMessage)
+            Button(action: viewModel.voteDemo ) { Text("VOTE") }
 
             if (isHttpApiCallResponseVisible) {
                 Text("Async api call response:")
@@ -34,7 +35,8 @@ extension ContentView {
         @Published public var apiTextResponse = "Loading..."
         @Published public var incomingMessage = ""
         
-        let wsService = WebSocketService()
+        let webSocketService = WebSocketService()
+        let pokerPlanningService = PokerPlanningService()
         
         init() {
             ExampleService().apiCallTextResult { apiTextResponse, error in
@@ -55,13 +57,30 @@ extension ContentView {
         
         func connectToWebSocket() {
             DispatchQueue.main.async {
-                self.wsService.connect(
+                self.webSocketService.connect(
                     hostname: "ws-poker-planning.herokuapp.com",
                     roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
                     listener: self
                 ) {error in
                     DispatchQueue.main.async {
                         print(error?.localizedDescription ?? "error while connecting")
+                    }
+                }
+            }
+        }
+
+        func voteDemo() {
+            self.vote(username: "KMM iOS", value: "8")
+        }
+
+        func vote(username: String, value: String) {
+            DispatchQueue.main.async {
+                let jsonMessage = self.pokerPlanningService.buildEstimateMessageAsJson(username: username, estimate: value)
+                Task {
+                    do {
+                        try await self.webSocketService.sendMessage(text: jsonMessage)
+                    } catch {
+                        print("Poker planning vote error: \(error)")
                     }
                 }
             }
