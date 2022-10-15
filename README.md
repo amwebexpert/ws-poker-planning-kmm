@@ -1,6 +1,6 @@
 # ws-poker-planning-kmm
 
-Kotlin Multiplatform Mobile (KMM) PokerPlanning client app
+Kotlin Multiplatform Mobile (KMM) PokerPlanning client app using web sockets through `ktor`
 
 ## What's included in this proof of concept
 
