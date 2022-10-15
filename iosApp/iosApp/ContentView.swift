@@ -2,26 +2,29 @@ import SwiftUI
 import shared
 
 let isHttpApiCallResponseVisible: Bool = false
-let isTextFieldStateDemoVisible: Bool = false
 let platformAndDate = ExampleService().getPlatformAndDate()
 
 struct ContentView: View {
     @ObservedObject private(set) var viewModel: ViewModel
-    @State private var username: String = ""
+    @State private var username: String = "iOS KMM Demo"
+    @State private var vote: String = "8"
 
-	var body: some View {
+    var body: some View {
         VStack  (alignment: .center, spacing: 16, content: {
-            if (isTextFieldStateDemoVisible) {
-                TextField("Username", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
-                Text("Username: \(username)")
-            }
             Text(platformAndDate)
+            
+            // Poker planning voting form
+            TextField("Username", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
+            TextField("Vote", text: $vote).textFieldStyle(RoundedBorderTextFieldStyle())
+            Button(
+                action: { viewModel.vote(username: username, value: vote)}) {
+                    Text("VOTE")
+                }
 
             // async UI element(s)
             Text("Async Poker planning message:")
             Text(viewModel.incomingMessage)
-            Button(action: viewModel.voteDemo ) { Text("VOTE") }
-
+            
             if (isHttpApiCallResponseVisible) {
                 Text("Async api call response:")
                 Text(viewModel.apiTextResponse)
@@ -48,7 +51,7 @@ extension ContentView {
                     }
                 }
             }
-
+            
             connectToWebSocket()
         }
         
@@ -68,11 +71,7 @@ extension ContentView {
                 }
             }
         }
-
-        func voteDemo() {
-            self.vote(username: "KMM iOS", value: "8")
-        }
-
+        
         func vote(username: String, value: String) {
             DispatchQueue.main.async {
                 let jsonMessage = self.pokerPlanningService.buildEstimateMessageAsJson(username: username, estimate: value)
@@ -85,7 +84,7 @@ extension ContentView {
                 }
             }
         }
-
+        
         // WsTextMessageListener impl methods
         func onConnectSuccess() {
             print("iOS: onConnectSuccess.")
