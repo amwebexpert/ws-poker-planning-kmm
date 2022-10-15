@@ -31,8 +31,8 @@ struct ContentView: View {
 
 extension ContentView {
     class ViewModel: ObservableObject {
-        @Published var apiTextResponse = "Loading..."
-        @Published var incomingMessage = ""
+        @Published public var apiTextResponse = "Loading..."
+        @Published public var incomingMessage = ""
         
         init() {
             ExampleService().apiCallTextResult { apiTextResponse, error in
@@ -56,6 +56,8 @@ extension ContentView {
                 func onConnectFailed() {}
                 func onMessage(text: String) {
                     viewModel.incomingMessage = text
+                    // https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
+                    viewModel.objectWillChange.send()
                     print("iOS: received text: \(text)")
                 }
             }
