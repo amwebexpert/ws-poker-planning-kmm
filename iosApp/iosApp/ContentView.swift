@@ -30,7 +30,7 @@ struct ContentView: View {
 }
 
 extension ContentView {
-    class ViewModel: ObservableObject {
+    class ViewModel: ObservableObject, WsTextMessageListener {
         @Published public var apiTextResponse = "Loading..."
         @Published public var incomingMessage = ""
         
@@ -45,32 +45,25 @@ extension ContentView {
                 }
             }
             
-            class WsTextMessageListenerImpl: WsTextMessageListener {
-                var viewModel: ViewModel
-                init(viewModel: ViewModel) {
-                    self.viewModel = viewModel
-                }
-
-                func onConnectSuccess() {}
-                func onClose() {}
-                func onConnectFailed() {}
-                func onMessage(text: String) {
-                    viewModel.incomingMessage = text
-                    // https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
-                    viewModel.objectWillChange.send()
-                    print("iOS: received text: \(text)")
-                }
-            }
 
             WebSocketService().connect(
                 hostname: "ws-poker-planning.herokuapp.com",
                 roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
-                listener: WsTextMessageListenerImpl(viewModel: self)
+                listener: self
             ) {error in
                 DispatchQueue.main.async {
                     print(error?.localizedDescription ?? "error while connecting")
                 }
             }
+        }
+
+        func onConnectSuccess() {}
+        func onClose() {}
+        func onConnectFailed() {}
+        func onMessage(text: String) {
+            self.incomingMessage = text
+            self.objectWillChange.send() //https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
+            print("iOS: received text: \(text)")
         }
     }
 }
