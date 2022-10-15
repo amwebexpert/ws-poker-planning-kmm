@@ -34,6 +34,8 @@ extension ContentView {
         @Published public var apiTextResponse = "Loading..."
         @Published public var incomingMessage = ""
         
+        let wsService = WebSocketService()
+        
         init() {
             ExampleService().apiCallTextResult { apiTextResponse, error in
                 DispatchQueue.main.async {
@@ -46,7 +48,7 @@ extension ContentView {
             }
             
 
-            WebSocketService().connect(
+            wsService.connect(
                 hostname: "ws-poker-planning.herokuapp.com",
                 roomUUID: "e78caaee-a1a2-4298-860d-81d7752226ae",
                 listener: self
@@ -63,7 +65,7 @@ extension ContentView {
         func onMessage(text: String) {
             self.incomingMessage = text
             self.objectWillChange.send() //https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
-            print("iOS: received text: \(text)")
+            print("iOS: received WebSocket message: \(text)")
         }
     }
 }
