@@ -51,13 +51,13 @@ extension ContentView {
                     }
                 }
             }
-            
+
             connectToWebSocket()
         }
         
         // TODO: implements startCommunication/stopCommunication like in MainViewModel.kt
         // and bind these methods the the iOS view lifecycle onPause/onResume equivalents
-        
+
         func connectToWebSocket() {
             DispatchQueue.main.async {
                 self.webSocketService.connect(
@@ -97,9 +97,11 @@ extension ContentView {
             connectToWebSocket()
         }
         func onMessage(text: String) {
-            self.incomingMessage = text
-            self.objectWillChange.send() //https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
             print("iOS: received WebSocket message: \(text)")
+            DispatchQueue.main.async {
+                self.incomingMessage = text
+                self.objectWillChange.send() //https://marcpalmer.net/me-why-is-my-swiftui-view-not-updating-when-the-model-changes/
+            }
         }
     }
 }
