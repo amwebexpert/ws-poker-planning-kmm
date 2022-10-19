@@ -6,6 +6,7 @@ let platformAndDate = ExampleService().getPlatformAndDate()
 
 struct ContentView: View {
     @ObservedObject private(set) var viewModel: ViewModel
+
     @State private var username: String = "iOS KMM Demo"
     @State private var vote: String = "8"
 
@@ -24,7 +25,7 @@ struct ContentView: View {
             // async UI element(s)
             Text("Async Poker planning message:")
             Text(viewModel.incomingMessage)
-            
+
             if (isHttpApiCallResponseVisible) {
                 Text("Async api call response:")
                 Text(viewModel.apiTextResponse)
@@ -56,7 +57,7 @@ extension ContentView {
         }
         
         // TODO: implements startCommunication/stopCommunication like in MainViewModel.kt
-        // and bind these methods the the iOS view lifecycle onPause/onResume equivalents
+        // TODO: bind these start/stop methods to the the iOS view lifecycle (onPause/onResume Android equivalents)
 
         func connectToWebSocket() {
             DispatchQueue.main.async {
