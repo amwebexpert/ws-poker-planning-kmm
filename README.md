@@ -2,6 +2,14 @@
 
 Kotlin Multiplatform Mobile (KMM) PokerPlanning client app using web sockets through `ktor`
 
+## Show cases
+
+Android app | iOS Application
+----------- | ---------------
+[YouTube recording :cinema: KMM demo Android](https://youtu.be/h7QuT552yz4) | [YouTube recording :cinema: KMM demo iOS](https://youtu.be/6FaL07SfNAc)
+![image](https://user-images.githubusercontent.com/3459255/196678460-11d479ba-21fc-4fc0-b85f-5ea8f2b38e40.png) | ![image](https://user-images.githubusercontent.com/3459255/196676728-e478e1b7-5a47-407d-8bbc-c3a2988b9cfc.png)
+
+
 ## What's included in this proof of concept
 
 This POC shows usage of the following kotlin multiplatform libraries:
